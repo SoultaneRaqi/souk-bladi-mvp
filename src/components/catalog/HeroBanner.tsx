@@ -3,37 +3,24 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useApp } from '../../context/AppContext';
 import { translations } from '../../data/translations';
 
-// --- CUSTOM SVG LOGOS FOR MOROCCAN INSTITUTIONS ---
-
-const LogoAB = () => (
-    <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
-        <circle cx="20" cy="20" r="19" fill="#F9F8F6" stroke="#528A46" strokeWidth="2" />
-        <path d="M12 28C12 28 8 15 20 10C32 15 28 28 28 28" fill="#528A46" />
-        <text x="20" y="25" fill="#FFF" fontSize="10" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">AB</text>
-    </svg>
-);
-
-const LogoONSSA = () => (
-    <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
-        <path d="M20 4L34 10V20C34 28 20 36 20 36C20 36 6 28 6 20V10L20 4Z" fill="#F9F8F6" stroke="#2B4C7E" strokeWidth="2" />
-        <path d="M20 8L30 12.5V20C30 26 20 32 20 32C20 32 10 26 10 20V12.5L20 8Z" fill="#2B4C7E" />
-        <text x="20" y="23" fill="#FFF" fontSize="8" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">ONSSA</text>
-    </svg>
-);
-
-const LogoODCO = () => (
-    <svg viewBox="0 0 40 40" className="w-16 h-16" fill="none">
-        <circle cx="20" cy="20" r="19" fill="#F9F8F6" stroke="#CD9532" strokeWidth="2" />
-        <path d="M20 10L23 17H30L24 21.5L26.5 28.5L20 24L13.5 28.5L16 21.5L10 17H17L20 10Z" fill="#CD9532" />
-        <text x="20" y="36" fill="#403328" fontSize="7" fontWeight="bold" fontFamily="sans-serif" textAnchor="middle">ODCO</text>
-    </svg>
-);
-
-// --- 3 MAIN PARTNERS ---
+// --- 3 MAIN PARTNERS USING REAL IMAGES ---
+// The 'logoUrl' points to the public folder in your Vite project.
 const SLIDES = [
-    { logo: LogoONSSA, name: 'ONSSA Maroc', desc: 'Contrôle & Sécurité Sanitaire Officielle' },
-    { logo: LogoAB, name: 'Label Bio Maroc', desc: 'Certification Agriculture Biologique' },
-    { logo: LogoODCO, name: 'Réseau ODCO', desc: 'Registre Officiel des Coopératives' }
+    {
+        logoUrl: '/logos/onssa.png',
+        name: 'ONSSA Maroc',
+        desc: 'Contrôle & Sécurité Sanitaire Officielle'
+    },
+    {
+        logoUrl: '/logos/label-bio.png',
+        name: 'Label Bio Maroc',
+        desc: 'Certification Agriculture Biologique'
+    },
+    {
+        logoUrl: '/logos/odco.png',
+        name: 'Réseau ODCO',
+        desc: 'Registre Officiel des Coopératives'
+    }
 ];
 
 export const HeroBanner: React.FC = () => {
@@ -49,7 +36,6 @@ export const HeroBanner: React.FC = () => {
     }, []);
 
     const ActiveSlide = SLIDES[currentSlide];
-    const ActiveLogo = ActiveSlide.logo;
 
     return (
         <section className="relative overflow-hidden rounded-[20px] shadow-sm flex flex-col md:flex-row items-stretch min-h-[220px]">
@@ -89,9 +75,17 @@ export const HeroBanner: React.FC = () => {
                         transition={{ duration: 0.5, ease: "easeOut" }}
                         className="flex flex-col items-center gap-4 px-8 mt-4"
                     >
-                        {/* Large Centered Logo */}
-                        <div className="bg-white p-3 rounded-[24px] shadow-lg shadow-black/10">
-                            <ActiveLogo />
+                        {/* Real Image Logo Container */}
+                        <div className="bg-white p-3 rounded-[24px] shadow-lg shadow-black/10 flex items-center justify-center w-[88px] h-[88px]">
+                            <img
+                                src={ActiveSlide.logoUrl}
+                                alt={ActiveSlide.name}
+                                className="w-full h-full object-contain"
+                                onError={(e) => {
+                                    // Fallback if the image isn't found yet
+                                    (e.target as HTMLImageElement).src = 'https://placehold.co/100x100/F6F5F2/A89F93?text=Logo';
+                                }}
+                            />
                         </div>
 
                         {/* Organization Info */}
