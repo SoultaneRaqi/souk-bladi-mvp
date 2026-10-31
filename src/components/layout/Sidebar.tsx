@@ -1,16 +1,22 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useId } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Store, Users, ShoppingCart, Info, Globe, ChevronDown, Check, UserCircle, Settings, Leaf, Zap } from 'lucide-react';
 import { useApp, type ActiveTab } from '../../context/AppContext';
 import { type Language, LANGUAGE_META, translations } from '../../data/translations';
+import { fmt } from '../../utils/format';
 import { BrandLogo } from '../common/BrandLogo';
 
 export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) => {
     const { language, setLanguage, activeTab, setActiveTab, setIsDrawerOpen, cartCount } = useApp();
     const t = translations[language];
+    const uid = useId();
+    const langMenuId = `${uid}-lang`;
+    const ecoTipId = `${uid}-eco`;
 
     const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
+    const [ecoTipOpen, setEcoTipOpen] = useState(false);
     const langMenuRef = useRef<HTMLDivElement>(null);
+    const langButtonRef = useRef<HTMLButtonElement>(null);
     const languages: Language[] = ['fr', 'ar', 'tzm', 'en'];
 
     useEffect(() => {
@@ -32,9 +38,9 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
 
     const handleNavClick = (id: ActiveTab | 'cart') => {
         if (id === 'cart') {
-            setIsDrawerOpen(true); // opens the drawer below xl
+            setIsDrawerOpen(true);
             if (window.matchMedia('(min-width: 1280px)').matches) {
-                document.getElementById('checkout')?.focus(); // permanent panel on xl
+                document.getElementById('checkout')?.focus();
             }
         } else {
             setActiveTab(id);
@@ -48,27 +54,43 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
             <div className="space-y-9">
 
                 {/* Language dropdown */}
-                <div className="relative" ref={langMenuRef}>
+                <div
+                    className="relative"
+                    ref={langMenuRef}
+                    onKeyDown={(e) => {
+                        if (e.key === 'Escape' && isLangMenuOpen) {
+                            e.stopPropagation();
+                            setIsLangMenuOpen(false);
+                            langButtonRef.current?.focus();
+                        }
+                    }}
+                >
                     <motion.button
+                        ref={langButtonRef}
                         whileTap={{ scale: 0.98 }}
                         type="button"
+                        aria-haspopup="true"
+                        aria-expanded={isLangMenuOpen}
+                        aria-controls={langMenuId}
+                        aria-label={`${t.language} : ${LANGUAGE_META[language].nativeName}`}
                         onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                        className="flex items-center justify-between w-full px-3.5 py-2.5 bg-line-strong/40 hover:bg-line-strong/70 rounded-2xl transition-all cursor-pointer ring-1 ring-line-strong/50 shadow-sm"
+                        className="flex items-center justify-between w-full min-h-11 px-3.5 py-2 bg-line-strong/40 hover:bg-line-strong/70 rounded-2xl transition-all cursor-pointer ring-1 ring-line-strong/50 shadow-sm"
                     >
                         <div className="flex items-center gap-2.5">
-                            <div className="w-6 h-6 rounded-full bg-ink text-white flex items-center justify-center shadow-inner">
-                                <Globe className="w-3.5 h-3.5" />
+                            <div className="w-7 h-7 rounded-full bg-ink text-white flex items-center justify-center shadow-inner">
+                                <Globe className="w-4 h-4" aria-hidden="true" />
                             </div>
-                            <span className="text-[13px] font-bold text-ink" lang={LANGUAGE_META[language].htmlLang}>
+                            <span className="text-sm font-bold text-ink" lang={LANGUAGE_META[language].htmlLang}>
                                 {LANGUAGE_META[language].label}
                             </span>
                         </div>
-                        <ChevronDown className={`w-4 h-4 text-bark transition-transform duration-300 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown aria-hidden="true" className={`w-4 h-4 text-bark transition-transform duration-300 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
                     </motion.button>
 
                     <AnimatePresence>
                         {isLangMenuOpen && (
                             <motion.div
+                                id={langMenuId}
                                 initial={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
                                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                                 exit={{ opacity: 0, y: -8, filter: 'blur(4px)' }}
@@ -82,15 +104,20 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                                             key={lang}
                                             type="button"
                                             lang={LANGUAGE_META[lang].htmlLang}
-                                            onClick={() => { setLanguage(lang); setIsLangMenuOpen(false); }}
-                                            className={`w-full flex items-center justify-between px-4 py-2.5 text-[13px] font-semibold transition-colors cursor-pointer ${
+                                            aria-current={isActive ? 'true' : undefined}
+                                            onClick={() => {
+                                                setLanguage(lang);
+                                                setIsLangMenuOpen(false);
+                                                langButtonRef.current?.focus();
+                                            }}
+                                            className={`w-full min-h-11 flex items-center justify-between px-4 py-2 text-sm font-semibold transition-colors cursor-pointer ${
                                                 isActive
                                                     ? 'text-berry bg-line/50'
                                                     : 'text-bark hover:bg-line/30 hover:text-ink'
                                             }`}
                                         >
-                                            <span>{LANGUAGE_META[lang].label}</span>
-                                            {isActive && <Check className="w-4 h-4 text-berry" />}
+                                            <span>{LANGUAGE_META[lang].nativeName}</span>
+                                            {isActive && <Check className="w-4 h-4 text-berry" aria-hidden="true" />}
                                         </button>
                                     );
                                 })}
@@ -105,7 +132,7 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                 </div>
 
                 {/* Navigation */}
-                <nav className="space-y-1.5 px-1 pt-2">
+                <nav aria-label={t.mainNav} className="space-y-1.5 px-1 pt-2">
                     {navItems.map((item) => {
                         const Icon = item.icon;
                         const isActive = activeTab === item.id;
@@ -114,6 +141,8 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                                 whileTap={{ scale: 0.97 }}
                                 key={item.id}
                                 type="button"
+                                aria-current={isActive ? 'page' : undefined}
+                                aria-label={item.id === 'cart' ? fmt(t.cartWithCount, { n: cartCount }) : undefined}
                                 onClick={() => handleNavClick(item.id)}
                                 className="w-full relative group cursor-pointer block text-start"
                             >
@@ -124,15 +153,15 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                                         transition={{ type: 'spring', stiffness: 350, damping: 35 }}
                                     />
                                 )}
-                                <div className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-semibold transition-all duration-200 ${
+                                <div className={`flex items-center gap-3.5 px-4 min-h-12 rounded-2xl text-sm font-semibold transition-all duration-200 ${
                                     isActive
                                         ? 'bg-line-strong/60 text-ink ltr:translate-x-1 rtl:-translate-x-1 shadow-sm ring-1 ring-line-strong/30'
                                         : 'text-bark hover:bg-line-strong/30 hover:text-ink ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1'
                                 }`}>
-                                    <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? 'text-ink' : 'text-muted group-hover:text-ink'}`} strokeWidth={isActive ? 2.5 : 2} />
+                                    <Icon aria-hidden="true" className={`w-[18px] h-[18px] transition-colors ${isActive ? 'text-ink' : 'text-muted group-hover:text-ink'}`} strokeWidth={isActive ? 2.5 : 2} />
                                     <span>{item.label}</span>
                                     {item.id === 'cart' && cartCount > 0 && (
-                                        <span className="ms-auto min-w-5 h-5 px-1.5 rounded-full bg-berry text-white text-[11px] font-bold flex items-center justify-center">
+                                        <span aria-hidden="true" className="ms-auto min-w-5 h-5 px-1.5 rounded-full bg-berry text-white text-xs font-bold flex items-center justify-center">
                                             {cartCount}
                                         </span>
                                     )}
@@ -150,45 +179,58 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                 <motion.button
                     whileTap={{ scale: 0.97 }}
                     type="button"
-                    className="w-full flex items-center justify-between p-2.5 rounded-2xl hover:bg-line-strong/50 transition-colors cursor-pointer group"
+                    className="w-full flex items-center justify-between p-2.5 min-h-12 rounded-2xl hover:bg-line-strong/50 transition-colors cursor-pointer group"
                 >
                     <div className="flex items-center gap-3">
                         <div className="w-9 h-9 rounded-full bg-gradient-to-br from-line-strong to-[#CFC7B6] flex items-center justify-center text-bark shadow-inner ring-1 ring-white/20">
-                            <UserCircle className="w-5 h-5" />
+                            <UserCircle className="w-5 h-5" aria-hidden="true" />
                         </div>
                         <div className="flex flex-col text-start">
-                            <span className="text-[13px] font-bold text-ink">{t.guest}</span>
-                            <span className="text-[10px] font-semibold text-muted group-hover:text-bark">{t.createAccount}</span>
+                            <span className="text-sm font-bold text-ink">{t.guest}</span>
+                            <span className="text-xs font-semibold text-muted group-hover:text-bark">{t.createAccount}</span>
                         </div>
                     </div>
-                    <Settings className="w-4 h-4 text-muted group-hover:text-ink transition-colors" />
+                    <Settings className="w-4 h-4 text-muted group-hover:text-ink transition-colors" aria-hidden="true" />
                 </motion.button>
 
                 {/* Green IT metrics + offline badge */}
                 <div className="bg-gradient-to-b from-line-strong/40 to-line-strong/20 rounded-2xl p-1.5 ring-1 ring-line-strong/60 shadow-sm relative group">
 
-                    <div className="flex items-center justify-between px-2.5 py-2 cursor-help">
-                        <div className="flex items-center gap-1.5 text-bark">
-                            <Leaf className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider">{t.ecoScore}</span>
-                        </div>
-                        <span className="text-[11px] font-bold text-leaf-deep bg-leaf-mist px-2 py-0.5 rounded-md border border-leaf-line">
+                    <button
+                        type="button"
+                        aria-expanded={ecoTipOpen}
+                        aria-describedby={ecoTipId}
+                        aria-label={t.ecoDetails}
+                        onClick={() => setEcoTipOpen((o) => !o)}
+                        className="w-full min-h-11 flex items-center justify-between px-2.5 py-2 rounded-xl cursor-pointer"
+                    >
+                        <span className="flex items-center gap-1.5 text-bark">
+                            <Leaf className="w-3.5 h-3.5" aria-hidden="true" />
+                            <span className="text-xs font-extrabold uppercase tracking-wider">{t.ecoScore}</span>
+                        </span>
+                        <span className="text-xs font-bold text-leaf-deep bg-leaf-mist px-2 py-0.5 rounded-md border border-leaf-line">
                             A
                         </span>
-                    </div>
+                    </button>
 
-                    <div className="absolute bottom-full start-0 mb-2 w-full p-2 bg-ink text-paper text-[10px] font-medium rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg flex flex-col gap-1">
-                        <div className="flex items-center gap-1.5"><Zap className="w-3 h-3 text-[#E4C381]" /> {t.tipWeight}</div>
-                        <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-leaf" /> {t.tipWebp}</div>
-                        <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-leaf" /> {t.tipNoVideo}</div>
+                    {/* Opens on hover, keyboard focus AND tap */}
+                    <div
+                        id={ecoTipId}
+                        className={`absolute bottom-full start-0 mb-2 w-full p-3 bg-ink text-paper text-xs font-medium rounded-xl transition-opacity pointer-events-none z-50 shadow-lg flex flex-col gap-1.5 ${
+                            ecoTipOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100 group-focus-within:opacity-100'
+                        }`}
+                    >
+                        <div className="flex items-center gap-1.5"><Zap className="w-3 h-3 text-[#E4C381]" aria-hidden="true" /> {t.tipWeight}</div>
+                        <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-leaf-mist" aria-hidden="true" /> {t.tipWebp}</div>
+                        <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-leaf-mist" aria-hidden="true" /> {t.tipNoVideo}</div>
                     </div>
 
                     <div className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-leaf-mist/90 border border-leaf-line/80 shadow-inner">
-                        <span className="relative flex h-2 w-2 shrink-0">
+                        <span aria-hidden="true" className="relative flex h-2 w-2 shrink-0">
                             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-leaf opacity-60"></span>
                             <span className="relative inline-flex rounded-full h-2 w-2 bg-leaf"></span>
                         </span>
-                        <span className="text-[11px] font-bold text-leaf-deep tracking-tight">
+                        <span className="text-xs font-bold text-leaf-deep">
                             {t.offlineReady}
                         </span>
                     </div>
