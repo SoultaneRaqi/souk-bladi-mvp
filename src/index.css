@@ -4,8 +4,8 @@
   /* Text & structure */
   --color-ink: #403328;
   --color-ink-soft: #5A4A3B;
-  --color-bark: #7A6B5D;
-  --color-muted: #6F6155;
+  --color-bark: #7A6B5D;      /* 5.1:1 on white */
+  --color-muted: #6F6155;     /* 6.0:1 on white */
 
   /* Surfaces & borders */
   --color-paper: #F9F8F6;
@@ -14,27 +14,25 @@
   --color-line-strong: #DCD5C6;
   --color-cream: #FFF9F0;
   --color-cream-line: #F2E5D0;
-  --color-cream-ink: #8C6B36;
+  --color-cream-ink: #7A5A28;
 
   /* Brand */
   --color-saffron: #CD9532;        /* fills, borders, icons only */
   --color-saffron-deep: #8A5A00;   /* gold TEXT on light backgrounds */
-  --color-honey: #CD8F2D;
-  --color-honey-deep: #985F18;
+  --color-honey: #9E6216;          /* hero background: white text 5.0:1 */
+  --color-honey-deep: #7A4A0E;     /* partners panel: white text 7.4:1 */
   --color-terracotta: #9F5B3E;
   --color-olive: #6A7045;
 
   /* Feedback */
   --color-brick: #B84B4B;
   --color-berry: #A53A3B;
-  --color-leaf: #528A46;
-  --color-leaf-deep: #3A5D2D;
+  --color-leaf: #528A46;           /* fills and icons only */
+  --color-leaf-deep: #3A5D2D;      /* green TEXT */
   --color-leaf-soft: #EAF2E8;
   --color-leaf-mist: #D6E3D1;
   --color-leaf-line: #C2D6BA;
 
-  /* Fonts (self-hosted via @fontsource). Arabic + Tifinagh are in every stack
-     so a Latin font falls through to the right script automatically. */
   --font-sans: 'DM Sans Variable', 'Noto Sans Arabic Variable', 'Noto Sans Tifinagh', ui-sans-serif, system-ui, sans-serif;
   --font-serif: 'Fraunces Variable', 'Noto Sans Arabic Variable', 'Noto Sans Tifinagh', ui-serif, Georgia, serif;
 }
@@ -53,12 +51,11 @@
   }
 }
 
-/* Arabic: lead with the Arabic font, and NEVER letter-space it
-   (tracking-wider breaks the joining of Arabic letters). */
 html:lang(ar) {
   --font-sans: 'Noto Sans Arabic Variable', 'DM Sans Variable', 'Noto Sans Tifinagh', system-ui, sans-serif;
   --font-serif: 'Noto Sans Arabic Variable', 'Fraunces Variable', 'Noto Sans Tifinagh', system-ui, serif;
 }
+/* Letter-spacing breaks Arabic joining */
 html:lang(ar) * {
   letter-spacing: normal !important;
 }
@@ -68,7 +65,16 @@ html:lang(ar) * {
   outline-offset: 2px;
 }
 
-/* Local geometric pattern (replaces the transparenttextures.com request) */
+/* Honour the OS "reduce motion" setting for CSS animations (ping, transitions) */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 .bg-zellige {
   background-image: url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23fff' stroke-width='1'%3E%3Crect x='12' y='12' width='24' height='24'/%3E%3Crect x='12' y='12' width='24' height='24' transform='rotate(45 24 24)'/%3E%3C/svg%3E");
   background-size: 48px 48px;

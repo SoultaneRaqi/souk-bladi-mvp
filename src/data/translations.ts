@@ -1,22 +1,86 @@
 export type Language = 'fr' | 'ar' | 'tzm' | 'en';
+export type Localized = Record<Language, string>;
+export type WeightUnit = 'ml' | 'g' | 'kg';
 
 export const LANGUAGE_META: Record<
     Language,
-    { label: string; dir: 'ltr' | 'rtl'; locale: string; htmlLang: string }
+    { label: string; nativeName: string; dir: 'ltr' | 'rtl'; locale: string; htmlLang: string }
 > = {
-    fr: { label: 'FR', dir: 'ltr', locale: 'fr-MA', htmlLang: 'fr' },
-    ar: { label: 'الدارجة', dir: 'rtl', locale: 'ar-MA', htmlLang: 'ar' },
-    tzm: { label: 'ⵜⴰⵎⴰⵣⵉⵖⵜ', dir: 'ltr', locale: 'fr-MA', htmlLang: 'zgh' },
-    en: { label: 'EN', dir: 'ltr', locale: 'en-GB', htmlLang: 'en' },
+    fr: { label: 'FR', nativeName: 'Français', dir: 'ltr', locale: 'fr-MA', htmlLang: 'fr' },
+    ar: { label: 'الدارجة', nativeName: 'الدارجة', dir: 'rtl', locale: 'ar-MA', htmlLang: 'ar' },
+    tzm: { label: 'ⵜⴰⵎⴰⵣⵉⵖⵜ', nativeName: 'ⵜⴰⵎⴰⵣⵉⵖⵜ', dir: 'ltr', locale: 'fr-MA', htmlLang: 'zgh' },
+    en: { label: 'EN', nativeName: 'English', dir: 'ltr', locale: 'en-GB', htmlLang: 'en' },
 };
+
+/* ------------------------------------------------------------------ */
+/*  COOPERATIVES + COMMUNES (localized data)                           */
+/*  TODO: Tifinagh values need a native-speaker check.                 */
+/*  TODO: member counts for amal / atlas are placeholders.             */
+/* ------------------------------------------------------------------ */
+
+export interface Cooperative {
+    id: string;
+    name: Localized;
+    region: Localized;
+    members: number;
+    typeKey: TranslationKey;
+}
+
+export const COOPERATIVES: Cooperative[] = [
+    {
+        id: 'tighanimine', members: 42, typeKey: 'coopTypeArgan',
+        name: { fr: 'Coop. Tighanimine', ar: 'تعاونية تيغانيمين', tzm: 'ⵜⴰⵎⵙⵎⵓⵏⵉⵜ ⵏ ⵜⵉⵖⴰⵏⵉⵎⵉⵏ', en: 'Tighanimine Coop.' },
+        region: { fr: 'Essaouira', ar: 'الصويرة', tzm: 'ⵜⴰⵙⵓⵔⵜ', en: 'Essaouira' },
+    },
+    {
+        id: 'souktana', members: 18, typeKey: 'coopTypeSaffron',
+        name: { fr: 'Coop. Souktana', ar: 'تعاونية سوكتانا', tzm: 'ⵜⴰⵎⵙⵎⵓⵏⵉⵜ ⵏ ⵙⵓⴽⵜⴰⵏⴰ', en: 'Souktana Coop.' },
+        region: { fr: 'Taliouine', ar: 'تاليوين', tzm: 'ⵜⴰⵍⵉⵡⵉⵏ', en: 'Taliouine' },
+    },
+    {
+        id: 'ziz', members: 56, typeKey: 'coopTypeDates',
+        name: { fr: 'Coop. Ziz Oasis', ar: 'تعاونية واحة زيز', tzm: 'ⵜⴰⵎⵙⵎⵓⵏⵉⵜ ⵏ ⵣⵉⵣ', en: 'Ziz Oasis Coop.' },
+        region: { fr: 'Errachidia', ar: 'الرشيدية', tzm: 'ⵕⵕⴰⵛⵉⴷⵉⵢⴰ', en: 'Errachidia' },
+    },
+    {
+        id: 'amal', members: 31, typeKey: 'coopTypeAmlou',
+        name: { fr: 'Coop. Amal', ar: 'تعاونية أمل', tzm: 'ⵜⴰⵎⵙⵎⵓⵏⵉⵜ ⴰⵎⴰⵍ', en: 'Amal Coop.' },
+        region: { fr: 'Agadir', ar: 'أكادير', tzm: 'ⴰⴳⴰⴷⵉⵔ', en: 'Agadir' },
+    },
+    {
+        id: 'atlas', members: 27, typeKey: 'coopTypeHoney',
+        name: { fr: 'Coop. Atlas', ar: 'تعاونية الأطلس', tzm: 'ⵜⴰⵎⵙⵎⵓⵏⵉⵜ ⵏ ⴰⵜⵍⴰⵙ', en: 'Atlas Coop.' },
+        region: { fr: 'Azilal', ar: 'أزيلال', tzm: 'ⴰⵣⵉⵍⴰⵍ', en: 'Azilal' },
+    },
+    {
+        id: 'roseraie', members: 24, typeKey: 'coopTypeCosmetics',
+        name: { fr: 'Coop. Roseraie', ar: 'تعاونية الوردة', tzm: 'ⵜⴰⵎⵙⵎⵓⵏⵉⵜ ⵏ ⵡⴰⵔⴷ', en: 'Roseraie Coop.' },
+        region: { fr: "Kelaat M'Gouna", ar: 'قلعة مكونة', tzm: 'ⵜⴰⵇⵍⵄⵜ ⵏ ⵎⴳⵓⵏⴰ', en: "Kelaat M'Gouna" },
+    },
+];
+
+export const getCoop = (id: string): Cooperative =>
+    COOPERATIVES.find((c) => c.id === id) ?? COOPERATIVES[0];
+
+export const COMMUNES: { id: string; label: Localized }[] = [
+    { id: 'ait-ourir', label: { fr: 'Aït Ourir (Al Haouz)', ar: 'آيت أورير (الحوز)', tzm: 'ⴰⵢⵜ ⵓⵔⵉⵔ (ⵍⵃⵓⵣ)', en: 'Aït Ourir (Al Haouz)' } },
+    { id: 'taliouine', label: { fr: 'Taliouine (Taroudant)', ar: 'تاليوين (تارودانت)', tzm: 'ⵜⴰⵍⵉⵡⵉⵏ (ⵜⴰⵔⵓⴷⴰⵏⵜ)', en: 'Taliouine (Taroudant)' } },
+    { id: 'tafraout', label: { fr: 'Tafraout (Tiznit)', ar: 'تافراوت (تيزنيت)', tzm: 'ⵜⴰⴼⵔⴰⵡⵜ (ⵜⵉⵣⵏⵉⵜ)', en: 'Tafraout (Tiznit)' } },
+    { id: 'arfoud', label: { fr: 'Arfoud (Errachidia)', ar: 'أرفود (الرشيدية)', tzm: 'ⴰⵔⴼⵓⴷ (ⵕⵕⴰⵛⵉⴷⵉⵢⴰ)', en: 'Arfoud (Errachidia)' } },
+    { id: 'mgouna', label: { fr: "Kelaat M'Gouna", ar: 'قلعة مكونة', tzm: 'ⵜⴰⵇⵍⵄⵜ ⵏ ⵎⴳⵓⵏⴰ', en: "Kelaat M'Gouna" } },
+];
+
+/* ------------------------------------------------------------------ */
+/*  PRODUCTS                                                           */
+/* ------------------------------------------------------------------ */
 
 export interface ProductItem {
     id: string;
     category: 'all' | 'spices' | 'oils' | 'sweets' | 'cosmetics';
-    name: Record<Language, string>;
-    cooperative: string;
+    name: Localized;
+    coopId: string;
     price: number;
-    weight: string;
+    weight: { value: number; unit: WeightUnit };
     imageKb: number;
     imageUrl: string;
     status?: 'new' | 'popular' | 'bio';
@@ -25,52 +89,51 @@ export interface ProductItem {
 
 export const PRODUCTS_DATA: ProductItem[] = [
     {
-        id: 'argan-bio', category: 'oils',
+        id: 'argan-bio', category: 'oils', coopId: 'tighanimine',
         name: { fr: "Huile d'Argan Bio", ar: 'زيت أركان البلدي', tzm: 'ⴰⵣⴰⵜⵉⵎ ⵏ ⵡⴰⵔⴳⴰⵏ', en: 'Organic Argan Oil' },
-        cooperative: 'Coop. Tighanimine (Essaouira)', price: 180, weight: '500 ml', imageKb: 68,
+        price: 180, weight: { value: 500, unit: 'ml' }, imageKb: 68,
         imageUrl: 'https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&q=80',
-        status: 'popular', stock: 12
+        status: 'popular', stock: 12,
     },
     {
-        id: 'safran-taliouine', category: 'spices',
+        id: 'safran-taliouine', category: 'spices', coopId: 'souktana',
         name: { fr: 'Safran AOP Taliouine', ar: 'زعفران تاليوين الحر', tzm: 'ⵣⴰⵄⴼⵔⴰⵏ ⵏ ⵜⴰⵍⵉⵡⵉⵏ', en: 'Taliouine Saffron PDO' },
-        cooperative: 'Coop. Souktana (Taliouine)', price: 260, weight: '5 g', imageKb: 54,
+        price: 260, weight: { value: 5, unit: 'g' }, imageKb: 54,
         imageUrl: 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?auto=format&fit=crop&w=600&q=80',
-        status: 'bio', stock: 4
+        status: 'bio', stock: 4,
     },
     {
-        id: 'dattes-medjool', category: 'sweets',
+        id: 'dattes-medjool', category: 'sweets', coopId: 'ziz',
         name: { fr: 'Dattes Medjool Royales', ar: 'تمر المجهول الملكي', tzm: 'ⵜⵉⵢⵏⵉ ⵏ ⵍⵎⵊⵀⵓⵍ', en: 'Royal Medjool Dates' },
-        cooperative: 'Coop. Ziz Oasis (Errachidia)', price: 140, weight: '1 kg', imageKb: 72,
+        price: 140, weight: { value: 1, unit: 'kg' }, imageKb: 72,
         imageUrl: 'https://images.unsplash.com/photo-1587049352847-4a222e784d38?auto=format&fit=crop&w=600&q=80',
-        status: 'new', stock: 25
+        status: 'new', stock: 25,
     },
     {
-        id: 'amlou-amandes', category: 'sweets',
+        id: 'amlou-amandes', category: 'sweets', coopId: 'amal',
         name: { fr: 'Amlou aux Amandes', ar: 'أملو باللوز البلدي', tzm: 'ⴰⵎⵍⵓ ⵏ ⵍⵍⵓⵣ', en: 'Traditional Almond Amlou' },
-        cooperative: 'Coop. Amal (Agadir)', price: 120, weight: '500 g', imageKb: 61,
+        price: 120, weight: { value: 500, unit: 'g' }, imageKb: 61,
         imageUrl: 'https://images.unsplash.com/photo-1559598467-f8b76c8155d0?auto=format&fit=crop&w=600&q=80',
-        stock: 8
+        stock: 8,
     },
     {
-        id: 'miel-thym', category: 'sweets',
+        id: 'miel-thym', category: 'sweets', coopId: 'atlas',
         name: { fr: 'Miel de Thym (Z3itra)', ar: 'عسل الزعتر الحر', tzm: 'ⵜⴰⵎⵎⵏⵜ ⵏ ⵓⵥⴰⵜⵜⴰⵔ', en: 'Pure Thyme Honey' },
-        cooperative: 'Coop. Atlas (Azilal)', price: 200, weight: '250 g', imageKb: 59,
+        price: 200, weight: { value: 250, unit: 'g' }, imageKb: 59,
         imageUrl: 'https://images.unsplash.com/photo-1587049352851-8d4e89134a5d?auto=format&fit=crop&w=600&q=80',
-        status: 'popular', stock: 3
+        status: 'popular', stock: 3,
     },
     {
-        id: 'eau-rose', category: 'cosmetics',
+        id: 'eau-rose', category: 'cosmetics', coopId: 'roseraie',
         name: { fr: 'Eau de Rose Distillée', ar: 'ماء الورد المقطر', tzm: 'ⴰⵎⴰⵏ ⵏ ⵡⴰⵔⴷ', en: 'Distilled Rose Water' },
-        cooperative: "Coop. Roseraie (M'Gouna)", price: 80, weight: '200 ml', imageKb: 45,
+        price: 80, weight: { value: 200, unit: 'ml' }, imageKb: 45,
         imageUrl: 'https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&w=600&q=80',
-        stock: 18
-    }
+        stock: 18,
+    },
 ];
 
 /* ------------------------------------------------------------------ */
-/*  DICTIONARIES                                                       */
-/*  {n} / {name} are placeholders filled by fmt() in utils/format.ts   */
+/*  DICTIONARIES ({n} / {name} are filled by fmt() in utils/format)    */
 /* ------------------------------------------------------------------ */
 
 const fr = {
@@ -79,34 +142,41 @@ const fr = {
     shop: 'Boutique',
     cooperatives: 'Nos Coopératives',
     cart: 'Panier',
+    cartWithCount: 'Panier, {n} article(s)',
     mission: 'Notre Mission',
     menu: 'Menu',
     close: 'Fermer',
     selectionTitle: 'Notre Sélection',
     season: "Saison d'Automne",
+    language: 'Langue',
+    skipToContent: 'Aller au contenu',
+    mainNav: 'Navigation principale',
+    categoriesNav: 'Catégories de produits',
 
     // Sidebar
     guest: 'Invité',
     createAccount: 'Créer un compte',
     ecoScore: 'Éco-Score',
+    ecoDetails: "Détails de l'Éco-Score",
     tipWeight: '140 Ko au total',
     tipWebp: 'Images WebP',
     tipNoVideo: '0 vidéo autoplay',
     offlineReady: 'Mode hors-ligne prêt',
 
-    // Top bar eco panel
+    // Eco panel
     ecoPageWeight: 'Poids Page',
     ecoEmission: 'Émission',
     ecoMode: 'Mode Éco',
     on: 'Activé',
     off: 'Désactivé',
-    ecoOptimized: 'Green IT Optimisé • 0 Vidéo Autoplay',
 
     // Hero
     heroTitle: 'Les trésors de nos coopératives, en direct.',
     heroSub: 'Soutenez nos collectifs ruraux marocains via une plateforme éco-conçue, rapide et éthique.',
     partnersTitle: 'Nos Partenaires Éthiques',
     slideLabel: 'Partenaire {n}',
+    pauseSlider: 'Mettre le diaporama en pause',
+    playSlider: 'Relancer le diaporama',
     partnerOnssaName: 'ONSSA Maroc',
     partnerOnssaDesc: 'Contrôle & Sécurité Sanitaire Officielle',
     partnerBioName: 'Label Bio Maroc',
@@ -129,19 +199,26 @@ const fr = {
     webpBadge: 'Format WebP ({n} Ko)',
     addProductAria: 'Ajouter {name} au panier',
     maxInCart: '{name} : quantité maximale atteinte',
-    addToCart: 'Ajouter',
-    added: 'Ajouté',
     addToCartLong: 'Ajouter au panier',
     producedBy: 'Produit directement par :',
     netWeight: 'Poids net',
     ruralAvailability: 'Disponibilité rurale',
     unitsReady: '{n} unités prêtes',
+    addedAnnouncement: '{name} ajouté au panier',
+    removedAnnouncement: '{name} retiré du panier',
+    quantityAnnouncement: '{name} : quantité {n}',
+    unitMl: 'ml',
+    unitG: 'g',
+    unitKg: 'kg',
 
     // Checkout
     confirmOrder: 'Confirmer votre commande',
     firstName: 'Prénom',
     namePlaceholder: 'Ex : Karim',
+    nameRequired: 'Indiquez votre prénom.',
     phone: 'Téléphone (SMS livraison uniquement)',
+    phoneHint: 'Format : +212 6XX XX XX XX',
+    phoneInvalid: 'Numéro invalide. Exemple : +212 6XX XX XX XX',
     communeLabel: 'Commune / Village de livraison',
     privacyNotice: "Engagement NumVert : Aucune carte d'identité (CIN) ni GPS requis. Vos données ne sont jamais vendues.",
     emptyCart: 'Votre panier est vide.',
@@ -159,6 +236,8 @@ const fr = {
     coopTypeArgan: "Huile d'Argan",
     coopTypeSaffron: 'Safran AOP',
     coopTypeDates: 'Dattes Medjool',
+    coopTypeAmlou: 'Amlou',
+    coopTypeHoney: 'Miel',
     coopTypeCosmetics: 'Cosmétique Bio',
 
     // Mission
@@ -182,15 +261,21 @@ const ar: Dict = {
     shop: 'المتجر',
     cooperatives: 'التعاونيات ديالنا',
     cart: 'السلة',
+    cartWithCount: 'السلة، {n} منتوجات',
     mission: 'المهمة ديالنا',
     menu: 'القائمة',
     close: 'سد',
     selectionTitle: 'اختيارنا',
     season: 'موسم الخريف',
+    language: 'اللغة',
+    skipToContent: 'دوز للمحتوى',
+    mainNav: 'التنقل الرئيسي',
+    categoriesNav: 'أصناف المنتوجات',
 
     guest: 'ضيف',
     createAccount: 'دير حساب',
     ecoScore: 'التنقيط الإيكولوجي',
+    ecoDetails: 'تفاصيل التنقيط الإيكولوجي',
     tipWeight: '140 كيلوبايت فالمجموع',
     tipWebp: 'تصاور WebP',
     tipNoVideo: 'بلا فيديو كيشغل بوحدو',
@@ -201,12 +286,13 @@ const ar: Dict = {
     ecoMode: 'الوضع الإيكولوجي',
     on: 'مفعّل',
     off: 'موقّف',
-    ecoOptimized: 'موقع خفيف • إيكولوجي 100%',
 
     heroTitle: 'خيرات التعاونيات ديالنا، نيشان لعندك.',
     heroSub: 'دعم التعاونيات الفلاحية المغربية فموقع خفيف، سريع وكيحترم المعطيات الشخصية.',
     partnersTitle: 'الشركاء ديالنا',
     slideLabel: 'الشريك {n}',
+    pauseSlider: 'وقّف العرض',
+    playSlider: 'شغّل العرض',
     partnerOnssaName: 'ONSSA المغرب',
     partnerOnssaDesc: 'المراقبة والسلامة الصحية الرسمية',
     partnerBioName: 'علامة بيو المغرب',
@@ -228,18 +314,25 @@ const ar: Dict = {
     webpBadge: 'صيغة WebP ({n} كيلوبايت)',
     addProductAria: 'زيد {name} للسلة',
     maxInCart: '{name} : وصلتي للحد الأقصى',
-    addToCart: 'زيد للسلة',
-    added: 'تزاد',
     addToCartLong: 'زيد للسلة',
     producedBy: 'منتوج مباشرة من :',
     netWeight: 'الوزن الصافي',
     ruralAvailability: 'التوفر فالبادية',
     unitsReady: '{n} وحدات واجدين',
+    addedAnnouncement: '{name} تزاد للسلة',
+    removedAnnouncement: '{name} تحيد من السلة',
+    quantityAnnouncement: '{name} : الكمية {n}',
+    unitMl: 'مل',
+    unitG: 'غ',
+    unitKg: 'كغ',
 
     confirmOrder: 'تأكيد الطلب',
     firstName: 'السمية',
     namePlaceholder: 'مثلا : كريم',
+    nameRequired: 'كتب السمية ديالك.',
     phone: 'رقم الهاتف',
+    phoneHint: 'الصيغة : +212 6XX XX XX XX',
+    phoneInvalid: 'الرقم ماشي صحيح. مثال : +212 6XX XX XX XX',
     communeLabel: 'الجماعة / الدوار ديال التوصيل',
     privacyNotice: 'التزام NumVert: بلا بطاقة وطنية (CIN) وبلا GPS. المعطيات ديالك ما عمرها تباع.',
     emptyCart: 'السلة خاوية.',
@@ -256,6 +349,8 @@ const ar: Dict = {
     coopTypeArgan: 'زيت أركان',
     coopTypeSaffron: 'زعفران AOP',
     coopTypeDates: 'تمر المجهول',
+    coopTypeAmlou: 'أملو',
+    coopTypeHoney: 'عسل',
     coopTypeCosmetics: 'تجميل بيو',
 
     missionTitle: 'الإيكولوجيا الرقمية و NumVert',
@@ -275,15 +370,21 @@ const en: Dict = {
     shop: 'Shop',
     cooperatives: 'Our Cooperatives',
     cart: 'Cart',
+    cartWithCount: 'Cart, {n} item(s)',
     mission: 'Our Mission',
     menu: 'Menu',
     close: 'Close',
     selectionTitle: 'Our Selection',
     season: 'Autumn Season',
+    language: 'Language',
+    skipToContent: 'Skip to content',
+    mainNav: 'Main navigation',
+    categoriesNav: 'Product categories',
 
     guest: 'Guest',
     createAccount: 'Create an account',
     ecoScore: 'Eco-Score',
+    ecoDetails: 'Eco-Score details',
     tipWeight: '140 KB in total',
     tipWebp: 'WebP images',
     tipNoVideo: '0 autoplay video',
@@ -294,12 +395,13 @@ const en: Dict = {
     ecoMode: 'Eco mode',
     on: 'On',
     off: 'Off',
-    ecoOptimized: 'Green IT Optimized • Zero Autoplay Video',
 
     heroTitle: 'Treasures from our cooperatives, direct to you.',
     heroSub: 'Support rural Moroccan collectives through a lightweight, fast, and privacy-first platform.',
     partnersTitle: 'Our Ethical Partners',
     slideLabel: 'Partner {n}',
+    pauseSlider: 'Pause slideshow',
+    playSlider: 'Resume slideshow',
     partnerOnssaName: 'ONSSA Morocco',
     partnerOnssaDesc: 'Official food safety control',
     partnerBioName: 'Morocco Organic Label',
@@ -321,18 +423,25 @@ const en: Dict = {
     webpBadge: 'WebP format ({n} KB)',
     addProductAria: 'Add {name} to cart',
     maxInCart: '{name}: maximum quantity reached',
-    addToCart: 'Add to cart',
-    added: 'Added',
     addToCartLong: 'Add to cart',
     producedBy: 'Produced directly by:',
     netWeight: 'Net weight',
     ruralAvailability: 'Rural availability',
     unitsReady: '{n} units ready',
+    addedAnnouncement: '{name} added to cart',
+    removedAnnouncement: '{name} removed from cart',
+    quantityAnnouncement: '{name}: quantity {n}',
+    unitMl: 'ml',
+    unitG: 'g',
+    unitKg: 'kg',
 
     confirmOrder: 'Confirm your order',
     firstName: 'First Name',
     namePlaceholder: 'e.g. Karim',
+    nameRequired: 'Please enter your first name.',
     phone: 'Mobile Number',
+    phoneHint: 'Format: +212 6XX XX XX XX',
+    phoneInvalid: 'Invalid number. Example: +212 6XX XX XX XX',
     communeLabel: 'Delivery Commune / Village',
     privacyNotice: 'NumVert Pledge: No ID card (CIN) or GPS required. Your data is never sold.',
     emptyCart: 'Your cart is empty.',
@@ -349,6 +458,8 @@ const en: Dict = {
     coopTypeArgan: 'Argan Oil',
     coopTypeSaffron: 'PDO Saffron',
     coopTypeDates: 'Medjool Dates',
+    coopTypeAmlou: 'Amlou',
+    coopTypeHoney: 'Honey',
     coopTypeCosmetics: 'Organic Cosmetics',
 
     missionTitle: 'Green IT & NumVert',
@@ -364,47 +475,132 @@ const en: Dict = {
 };
 
 /*
- * TAMAZIGHT: only strings that were already in Tifinagh are kept here.
- * Every other key falls back to French (visible, so nobody mistakes it for a
- * translation). Removed because they mixed Arabic/Latin letters into Tifinagh:
- * offlineReady, emptyCart, totalLabel. TODO: have a native speaker translate
- * those + everything that still falls back to French.
+ * TAMAZIGHT: only strings already in Tifinagh live here. Every other key
+ * falls back to Arabic on purpose (visible, never a wrong translation).
+ * UNTRANSLATED_TZM below lists what still needs a native speaker; the app
+ * prints it to the console (dev only) when you switch to Tamazight.
  */
-const tzm: Dict = {
-    ...fr,
+const tzmOverrides: Partial<Dict> = {
+    // Navigation & general
+    docTitle: 'Souk Bladi · ⵜⵉⵎⵙⵎⵓⵏⵉⵏ ⵜⵉⵎⵖⵔⵉⴱⵉⵢⵉⵏ',
     shop: 'ⵜⴰⵃⴰⵏⵓⵜ',
     cooperatives: 'ⵜⵉⵎⵙⵎⵓⵏⵉⵏ ⵏⵏⵖ',
     cart: 'ⵜⴰⵙⴽⵏⵉⵜ',
+    cartWithCount: 'ⵜⴰⵙⴽⵏⵉⵜ, {n} ⵏ ⵉⴼⴰⵔⵉⵙⵏ',
     mission: 'ⵜⴰⵙⵎⵉⴳⵍⵜ ⵏⵏⵖ',
+    menu: 'ⵜⴰⵍⴳⴰⵎⵜ',
+    close: 'ⵔⴳⵍ',
+    selectionTitle: 'ⴰⵙⵜⴰⵢ ⵏⵏⵖ',
+    season: 'ⴰⵏⵏⴰⵣ ⵏ ⵜⵎⵡⴰⵏⵜ',
+    language: 'ⵜⵓⵜⵍⴰⵢⵜ',
+    skipToContent: 'ⵣⵔⵉ ⵖⵔ ⵓⴳⴱⵓⵔ',
+    mainNav: 'ⴰⵙⵏⵎⴰⵍⴰ ⴰⴷⵙⵍⴰⵏ',
+    categoriesNav: 'ⴰⵏⴰⵡⵏ ⵏ ⵉⴼⴰⵔⵉⵙⵏ',
+
+    // Sidebar
+    guest: 'ⴰⵏⴱⴳⵉ',
+    createAccount: 'ⵙⵏⴼⵍⵓⵍ ⴰⵎⵉⴹⴰⵏ',
+    ecoScore: 'ⵜⴰⵏⵇⵇⵉⴹⵜ ⵜⴰⵡⵏⴰⴹⴰⵏⵜ',
+    ecoDetails: 'ⵉⴼⵔⵓⵔⵉⵜⵏ ⵏ ⵜⵏⵇⵇⵉⴹⵜ ⵜⴰⵡⵏⴰⴹⴰⵏⵜ',
+    tipWeight: '140 ⴽⴱ ⴳ ⵓⵖⵔⵓⴷ',
+    tipWebp: 'ⵜⵉⵡⵍⴰⴼⵉⵏ WebP',
+    tipNoVideo: '0 ⵏ ⵓⴼⵉⴷⵢⵓ ⴰⵡⵓⵔⵎⴰⵏ',
+    offlineReady: 'ⴰⵙⴽⴰⵔ ⵡⴰⵔ ⴰⵏⵜⵉⵔⵏⵉⵜ ⵉⵃⵢⴰ',
+
+    // Eco panel
+    ecoPageWeight: 'ⴰⵥⴰⵥⵓ ⵏ ⵜⵙⵏⴰ',
+    ecoEmission: 'ⴰⵙⵓⴼⵖ',
+    ecoMode: 'ⴰⵙⴽⴰⵔ ⴰⵡⵏⴰⴹⴰⵏ',
+    on: 'ⵉⵔⵎⴷ',
+    off: 'ⵉⴱⴷⴷ',
+
+    // Hero
     heroTitle: 'ⵜⵉⴳⵎⵎⵉ ⵏ ⵜⵎⵙⵎⵓⵏⵉⵏ ⵏⵏⵖ, ⵙⵔⵉⴷ.',
     heroSub: 'ⴰⵡⵙ ⵉ ⵜⵎⵙⵎⵓⵏⵉⵏ ⵏ ⵜⴼⵍⵍⴰⵃⵜ ⴳ ⵍⵎⵖⵔⵉⴱ ⵙ ⵓⵙⵉⵜ ⴰⴼⵙⵙⴰⵙ ⴷ ⵓⵣⵔⴼⴰⵏ.',
-    addToCart: 'ⵔⵏⵓ',
-    added: 'ⵉⵜⵜⵓⵔⵏⴰ',
+    partnersTitle: 'ⵉⵎⴷⵔⴰⵡⵏ ⵏⵏⵖ',
+    slideLabel: 'ⴰⵎⴷⵔⴰⵡ {n}',
+    pauseSlider: 'ⵙⴱⴷⴷ ⴰⵙⴼⵙⵔ',
+    playSlider: 'ⵙⵔⵎⴷ ⴰⵙⴼⵙⵔ',
+    partnerOnssaName: 'ONSSA ⵍⵎⵖⵔⵉⴱ',
+    partnerOnssaDesc: 'ⴰⵙⵡⵓⴷⴷⵓ ⴷ ⵜⵏⴼⵔⵓⵜ ⵜⴰⴷⵓⵙⴰⵏⵜ ⵜⵓⵏⵚⵉⴱⵜ',
+    partnerBioName: 'ⵜⴰⵎⴰⵜⴰⵔⵜ Bio ⵍⵎⵖⵔⵉⴱ',
+    partnerBioDesc: 'ⴰⵙⵍⴽⵉⵏ ⵏ ⵜⴼⵍⵍⴰⵃⵜ ⵜⴰⴳⴰⵎⴰⵏⵜ',
+    partnerOdcoName: 'ⴰⵥⵟⵟⴰ ODCO',
+    partnerOdcoDesc: 'ⴰⵣⵎⵎⴻⵎ ⵓⵏⵚⵉⴱ ⵏ ⵜⵎⵙⵎⵓⵏⵉⵏ',
+
+    // Catalog
+    catAll: 'ⴽⵓⵍⵍⵓ ⵉⴼⴰⵔⵉⵙⵏ',
+    catOils: 'ⵉⵣⴰⵜⵉⵎⵏ',
+    catSpices: 'ⵉⵙⴰⴼⴰⵔⵏ ⴷ ⵣⴰⵄⴼⵔⴰⵏ',
+    catSweets: 'ⵜⴰⵎⵎⵏⵜ ⴷ ⵜⵉⵢⵏⵉ',
+    catCosmetics: 'ⴰⴼⵓⵍⴽⵉ ⴰⴳⴰⵎⴰⵏ',
+    statusNew: 'ⴰⵎⴰⵢⵏⵓ',
+    statusBio: 'ⴰⴳⴰⵎⴰⵏ ⵉⵜⵜⵓⵙⵖⵥⵏⵏ',
+    statusPopular: 'ⵉⵜⵜⵓⵙⵓⵜⵔ ⴱⴰⵀⵔⴰ',
+    priceDirect: 'ⴰⵜⵉⴳ ⵓⵙⵔⵉⴷ',
+    lastUnits: 'ⵖⴰⵙ {n} ⵉ ⴷ ⵉⵇⵇⵉⵎⵏ',
+    inStock: 'ⵉⵍⵍⴰ',
+    webpBadge: 'ⴰⵎⴰⵙⴰⵍ WebP ({n} ⴽⴱ)',
+    addProductAria: 'ⵔⵏⵓ {name} ⵖⵔ ⵜⵙⴽⵏⵉⵜ',
+    maxInCart: '{name} : ⵜⵍⴽⵎⴷ ⴰⵡⵜⵜⵓ ⴰⵎⵇⵇⵔⴰⵏ',
+    addToCartLong: 'ⵔⵏⵓ ⵖⵔ ⵜⵙⴽⵏⵉⵜ',
+    producedBy: 'ⵉⵜⵜⵓⴼⴰⵔⵙ ⵙⵔⵉⴷ ⵙⵖⵓⵔ :',
+    netWeight: 'ⴰⵥⴰⵥⵓ ⵓⵙⴼⵉ',
+    ruralAvailability: 'ⵜⵉⵍⵉⵜ ⴳ ⵓⴼⴰⵔⴰ',
+    unitsReady: '{n} ⵏ ⵜⵢⵓⵡⵏⵉⵏ ⵃⵢⴰⵏⵜ',
+    addedAnnouncement: 'ⵉⵜⵜⵓⵔⵏⴰ {name} ⵖⵔ ⵜⵙⴽⵏⵉⵜ',
+    removedAnnouncement: 'ⵉⵜⵜⵓⴽⴽⵙ {name} ⵣⴳ ⵜⵙⴽⵏⵉⵜ',
+    quantityAnnouncement: '{name} : ⵜⴰⵙⵎⴽⵜⴰ {n}',
+    unitMl: 'ⵎⵍ',
+    unitG: 'ⴳ',
+    unitKg: 'ⴽⴳ',
+
+    // Checkout
     confirmOrder: 'ⵙⵖⵥⵏ ⵜⴰⵙⵓⵜⵍⵜ',
     firstName: 'ⵉⵙⵎ',
+    namePlaceholder: 'ⴰⵎⴷⵢⴰ : ⴽⴰⵔⵉⵎ',
+    nameRequired: 'ⴰⵔⴰ ⵉⵙⵎ ⵏⵏⴽ.',
     phone: 'ⵓⵟⵟⵓⵏ ⵏ ⵓⵜⵉⵍⵉⴼⵓⵏ',
+    phoneHint: 'ⴰⵎⴰⵙⴰⵍ : +212 6XX XX XX XX',
+    phoneInvalid: 'ⵓⵟⵟⵓⵏ ⵓⵔ ⵉⵖⵥⵉⵏ. ⴰⵎⴷⵢⴰ : +212 6XX XX XX XX',
     communeLabel: 'ⵜⴰⴳⵔⴰⵡⵜ / ⴰⴷⵡⵡⴰⵔ',
     privacyNotice: 'NumVert: ⵡⴰⵍⵓ CIN ⵏⵖ GPS. ⵉⵙⴼⴽⴰ ⵏⵏⴽ ⵓⵔ ⴷⴰ ⵜⵜⵏⵣⴰⵏ.',
-    ecoOptimized: 'Green IT • ⴰⴼⵙⵙⴰⵙ',
+    emptyCart: 'ⵜⴰⵙⴽⵏⵉⵜ ⵏⵏⴽ ⵜⵅⵡⴰ.',
+    totalLabel: 'ⴰⵖⵔⵓⴷ ⴳ ⵡⴰⴽⵓⴷ ⵏ ⵡⴰⵡⴰⴹ',
+    orderDone: 'ⵜⴰⵙⵓⵜⵍⵜ ⵜⵜⵓⵙⵖⵥⵏ !',
+    orderDoneText: 'ⵜⴰⵙⵓⵜⵍⵜ ⵏⵏⴽ ⵜⵜⵓⵣⵎⵎⴻⵎ ⵡⴰⵔ ⴰⵍⵇⵇⵓⴹ ⵏ ⵉⵙⴼⴽⴰ ⵉⵣⴰⵢⴷⵏ.',
+    increase: 'ⵔⵏⵓ ⵜⴰⵙⵎⴽⵜⴰ',
+    decrease: 'ⵙⵏⵇⵙ ⵜⴰⵙⵎⴽⵜⴰ',
+    remove: 'ⴽⴽⵙ ⵣⴳ ⵜⵙⴽⵏⵉⵜ',
+
+    // Cooperatives
+    coopsTitle: 'ⵜⵉⵎⵙⵎⵓⵏⵉⵏ ⵏⵏⵖ ⵜⵉⵎⴷⵔⴰⵡⵉⵏ',
+    coopsIntro: 'ⴰⵥⵟⵟⴰ ⵏ {n} ⵏ ⵜⵎⵙⵎⵓⵏⵉⵏ ⵜⵉⵎⵖⵔⵉⴱⵉⵢⵉⵏ, ⵉⵎⵓⵏⵏ ⵖⴼ ⵜⵖⴰⵔⴰ, ⵉⵎⵏⵣⴰⵢⵏ ⴷ ⵜⵙⴱⴱⴰⴱⵜ ⵜⴰⵣⵔⴼⴰⵏⵜ.',
+    members: '{n} ⵏ ⵉⴳⵎⴰⵎⵏ',
+    coopTypeArgan: 'ⴰⵣⴰⵜⵉⵎ ⵏ ⵡⴰⵔⴳⴰⵏ',
+    coopTypeSaffron: 'ⵣⴰⵄⴼⵔⴰⵏ AOP',
+    coopTypeDates: 'ⵜⵉⵢⵏⵉ ⵏ ⵍⵎⵊⵀⵓⵍ',
+    coopTypeAmlou: 'ⴰⵎⵍⵓ',
+    coopTypeHoney: 'ⵜⴰⵎⵎⵏⵜ',
+    coopTypeCosmetics: 'ⴰⴼⵓⵍⴽⵉ ⴰⴳⴰⵎⴰⵏ',
+
+    // Mission
+    missionTitle: 'Green IT & NumVert',
+    missionIntro: 'ⴰⵙⵉⵜ ⵏⵏⵖ ⵉⵜⵜⵓⵙⴽⴰⵔ ⵖⴼ ⵉⵎⵏⵣⴰⵢⵏ ⵏ ⵜⴷⵎⵙⴰ ⵜⴰⵎⵓⵟⵟⵓⵏⵜ ⴷ ⵓⵡⵇⵇⵔ ⵏ ⵜⵓⴷⵔⵜ ⵜⵓⵙⵍⵉⴳⵜ.',
+    ecoHeading: 'ⵜⴰⴷⵎⵙⴰ ⵜⴰⵎⵓⵟⵟⵓⵏⵜ',
+    eco1: 'ⵜⵉⵡⵍⴰⴼⵉⵏ 100% ⵙ ⵓⵎⴰⵙⴰⵍ WebP',
+    eco2: 'ⵡⴰⵍⵓ ⴰⴼⵉⴷⵢⵓ ⴰⵡⵓⵔⵎⴰⵏ',
+    eco3: 'DOM ⴰⴼⵙⵙⴰⵙ ⴷ ⵜⵙⵓⵜⴰⵔ ⵜⵉⴷⵔⵓⵙⵉⵏ',
+    privacyHeading: 'ⵜⵓⴷⵔⵜ ⵜⵓⵙⵍⵉⴳⵜ (Privacy by Design)',
+    privacy1: 'ⵡⴰⵍⵓ ⴰⵙⵓⵜⵔ ⵏ ⵜⴽⴰⵔⴹⴰ ⵜⴰⵏⴰⵎⵓⵔⵜ (CIN)',
+    privacy2: 'ⵡⴰⵍⵓ ⴰⴹⴼⵓⵕ GPS ⴳ ⵡⴰⵡⴰⴹ',
+    privacy3: 'ⵜⵉⴳⵔⴰⵡⵉⵏ ⵏ ⵓⴼⴰⵔⴰ ⴳ ⵡⴰⵏⵙⴰ',
 };
 
+const tzm: Dict = { ...ar, ...tzmOverrides };
+
+export const UNTRANSLATED_TZM = (Object.keys(ar) as TranslationKey[]).filter(
+    (key) => !(key in tzmOverrides)
+);
+
 export const translations: Record<Language, Dict> = { fr, ar, tzm, en };
-
-/* ------------------------------------------------------------------ */
-/*  COOPERATIVES (single source of truth for the count shown in UI)    */
-/* ------------------------------------------------------------------ */
-
-export interface Cooperative {
-    id: string;
-    name: string;
-    region: string;
-    members: number;
-    typeKey: TranslationKey;
-}
-
-export const COOPERATIVES: Cooperative[] = [
-    { id: 'tighanimine', name: 'Coop. Tighanimine', region: 'Essaouira', members: 42, typeKey: 'coopTypeArgan' },
-    { id: 'souktana', name: 'Coop. Souktana', region: 'Taliouine', members: 18, typeKey: 'coopTypeSaffron' },
-    { id: 'ziz', name: 'Coop. Ziz Oasis', region: 'Errachidia', members: 56, typeKey: 'coopTypeDates' },
-    { id: 'roseraie', name: 'Coop. Roseraie', region: "Kelaat M'Gouna", members: 24, typeKey: 'coopTypeCosmetics' },
-];

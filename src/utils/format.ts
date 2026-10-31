@@ -1,4 +1,4 @@
-import { LANGUAGE_META, type Language } from '../data/translations';
+import { LANGUAGE_META, translations, type Language, type ProductItem } from '../data/translations';
 
 const cache = new Map<Language, Intl.NumberFormat>();
 
@@ -15,6 +15,13 @@ export function formatPrice(amount: number, language: Language): string {
         cache.set(language, formatter);
     }
     return formatter.format(amount);
+}
+
+/** { value: 500, unit: 'ml' } -> "500 ml" (fr/en), "500 مل" (ar) */
+export function formatWeight(weight: ProductItem['weight'], language: Language): string {
+    const t = translations[language];
+    const unit = weight.unit === 'ml' ? t.unitMl : weight.unit === 'g' ? t.unitG : t.unitKg;
+    return `${new Intl.NumberFormat(LANGUAGE_META[language].locale).format(weight.value)} ${unit}`;
 }
 
 /** fmt('Plus que {n}', { n: 3 }) -> 'Plus que 3' */
