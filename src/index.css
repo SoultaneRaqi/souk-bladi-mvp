@@ -1,14 +1,48 @@
 @import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap');
 
-@layer base {
-  body {
-    /* Matches the off-white center pane background */
-    @apply bg-[#F6F5F2] text-stone-900 antialiased m-0 p-0;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  }
+@theme {
+  /* Text & structure */
+  --color-ink: #403328;
+  --color-ink-soft: #5A4A3B;
+  --color-bark: #7A6B5D;
+  --color-muted: #6F6155;
 
-  h1, h2, h3, .font-serif {
-    font-family: 'Playfair Display', serif;
+  /* Surfaces & borders */
+  --color-paper: #F9F8F6;
+  --color-sand: #F6F5F2;
+  --color-line: #EAE5D9;
+  --color-line-strong: #DCD5C6;
+  --color-cream: #FFF9F0;
+  --color-cream-line: #F2E5D0;
+  --color-cream-ink: #8C6B36;
+
+  /* Brand */
+  --color-saffron: #CD9532;        /* fills, borders, icons only */
+  --color-saffron-deep: #8A5A00;   /* gold TEXT on light backgrounds */
+  --color-honey: #CD8F2D;
+  --color-honey-deep: #985F18;
+  --color-terracotta: #9F5B3E;
+  --color-olive: #6A7045;
+
+  /* Feedback */
+  --color-brick: #B84B4B;
+  --color-berry: #A53A3B;
+  --color-leaf: #528A46;
+  --color-leaf-deep: #3A5D2D;
+  --color-leaf-soft: #EAF2E8;
+  --color-leaf-mist: #D6E3D1;
+  --color-leaf-line: #C2D6BA;
+}
+
+@utility scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
   }
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-saffron-deep);
+  outline-offset: 2px;
 }
