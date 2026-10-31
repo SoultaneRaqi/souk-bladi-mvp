@@ -47,7 +47,7 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
 
             <div className="space-y-9">
 
-                {/* Language Dropdown */}
+                {/* Language dropdown */}
                 <div className="relative" ref={langMenuRef}>
                     <motion.button
                         whileTap={{ scale: 0.98 }}
@@ -59,11 +59,11 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                             <div className="w-6 h-6 rounded-full bg-ink text-white flex items-center justify-center shadow-inner">
                                 <Globe className="w-3.5 h-3.5" />
                             </div>
-                            <span className="text-[13px] font-bold text-ink">
+                            <span className="text-[13px] font-bold text-ink" lang={LANGUAGE_META[language].htmlLang}>
                                 {LANGUAGE_META[language].label}
                             </span>
                         </div>
-                        <ChevronDown className={`w-4 h-4 text-[#7A6A4E] transition-transform duration-300 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
+                        <ChevronDown className={`w-4 h-4 text-bark transition-transform duration-300 ${isLangMenuOpen ? 'rotate-180' : ''}`} />
                     </motion.button>
 
                     <AnimatePresence>
@@ -81,6 +81,7 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                                         <button
                                             key={lang}
                                             type="button"
+                                            lang={LANGUAGE_META[lang].htmlLang}
                                             onClick={() => { setLanguage(lang); setIsLangMenuOpen(false); }}
                                             className={`w-full flex items-center justify-between px-4 py-2.5 text-[13px] font-semibold transition-colors cursor-pointer ${
                                                 isActive
@@ -98,7 +99,7 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                     </AnimatePresence>
                 </div>
 
-                {/* Brand Logo */}
+                {/* Brand logo */}
                 <div className="px-1">
                     <BrandLogo />
                 </div>
@@ -125,10 +126,10 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                                 )}
                                 <div className={`flex items-center gap-3.5 px-4 py-3 rounded-2xl text-[14px] font-semibold transition-all duration-200 ${
                                     isActive
-                                        ? 'bg-line-strong/60 text-ink translate-x-1 shadow-sm ring-1 ring-line-strong/30'
-                                        : 'text-bark hover:bg-line-strong/30 hover:text-ink group-hover:translate-x-1'
+                                        ? 'bg-line-strong/60 text-ink ltr:translate-x-1 rtl:-translate-x-1 shadow-sm ring-1 ring-line-strong/30'
+                                        : 'text-bark hover:bg-line-strong/30 hover:text-ink ltr:group-hover:translate-x-1 rtl:group-hover:-translate-x-1'
                                 }`}>
-                                    <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? 'text-ink' : 'text-[#9C8F80] group-hover:text-ink'}`} strokeWidth={isActive ? 2.5 : 2} />
+                                    <Icon className={`w-[18px] h-[18px] transition-colors ${isActive ? 'text-ink' : 'text-muted group-hover:text-ink'}`} strokeWidth={isActive ? 2.5 : 2} />
                                     <span>{item.label}</span>
                                     {item.id === 'cart' && cartCount > 0 && (
                                         <span className="ms-auto min-w-5 h-5 px-1.5 rounded-full bg-berry text-white text-[11px] font-bold flex items-center justify-center">
@@ -145,7 +146,7 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
             {/* BOTTOM SECTION */}
             <div className="space-y-3 px-1">
 
-                {/* Guest Profile */}
+                {/* Guest profile */}
                 <motion.button
                     whileTap={{ scale: 0.97 }}
                     type="button"
@@ -156,8 +157,8 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                             <UserCircle className="w-5 h-5" />
                         </div>
                         <div className="flex flex-col text-start">
-                            <span className="text-[13px] font-bold text-ink">Invité</span>
-                            <span className="text-[10px] font-semibold text-muted group-hover:text-bark">Créer un compte</span>
+                            <span className="text-[13px] font-bold text-ink">{t.guest}</span>
+                            <span className="text-[10px] font-semibold text-muted group-hover:text-bark">{t.createAccount}</span>
                         </div>
                     </div>
                     <Settings className="w-4 h-4 text-muted group-hover:text-ink transition-colors" />
@@ -169,7 +170,7 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                     <div className="flex items-center justify-between px-2.5 py-2 cursor-help">
                         <div className="flex items-center gap-1.5 text-bark">
                             <Leaf className="w-3.5 h-3.5" />
-                            <span className="text-[10px] font-extrabold uppercase tracking-wider">Éco-Score</span>
+                            <span className="text-[10px] font-extrabold uppercase tracking-wider">{t.ecoScore}</span>
                         </div>
                         <span className="text-[11px] font-bold text-leaf-deep bg-leaf-mist px-2 py-0.5 rounded-md border border-leaf-line">
                             A
@@ -177,9 +178,9 @@ export const Sidebar: React.FC<{ onNavigate?: () => void }> = ({ onNavigate }) =
                     </div>
 
                     <div className="absolute bottom-full start-0 mb-2 w-full p-2 bg-ink text-paper text-[10px] font-medium rounded-xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50 shadow-lg flex flex-col gap-1">
-                        <div className="flex items-center gap-1.5"><Zap className="w-3 h-3 text-[#E4C381]" /> 140 Ko Total</div>
-                        <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-leaf" /> Images WebP</div>
-                        <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-leaf" /> 0 Vidéo Autoplay</div>
+                        <div className="flex items-center gap-1.5"><Zap className="w-3 h-3 text-[#E4C381]" /> {t.tipWeight}</div>
+                        <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-leaf" /> {t.tipWebp}</div>
+                        <div className="flex items-center gap-1.5"><Check className="w-3 h-3 text-leaf" /> {t.tipNoVideo}</div>
                     </div>
 
                     <div className="flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl bg-leaf-mist/90 border border-leaf-line/80 shadow-inner">

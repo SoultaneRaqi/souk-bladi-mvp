@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingBag, Menu, Zap, Cloud } from 'lucide-react';
 import { useApp, type ActiveTab } from '../../context/AppContext';
-import { translations } from '../../data/translations';
+import { LANGUAGE_META, translations } from '../../data/translations';
 
 // --- CUSTOM HORIZONTAL OLIVE BRANCH ---
 const CenterOliveBranch = () => (
@@ -49,6 +49,7 @@ const CenterOliveBranch = () => (
 export const TopBar: React.FC = () => {
     const { language, setIsDrawerOpen, setIsNavOpen, cartCount, activeTab } = useApp();
     const t = translations[language];
+    const isRtl = LANGUAGE_META[language].dir === 'rtl';
     const [isEcoMode, setIsEcoMode] = useState(true);
 
     const title: Record<ActiveTab, string> = {
@@ -57,10 +58,13 @@ export const TopBar: React.FC = () => {
         mission: t.mission,
     };
 
+    // The toggle thumb must travel the other way in RTL
+    const thumbX = isEcoMode ? (isRtl ? -12 : 12) : 0;
+
     return (
         <header className="flex flex-wrap items-center justify-between pb-6 mb-6 border-b border-line">
 
-            {/* LEFT: Mobile menu toggle & title */}
+            {/* LEFT: mobile menu toggle & title */}
             <div className="flex items-center gap-3 w-auto">
                 <button
                     type="button"
@@ -95,16 +99,17 @@ export const TopBar: React.FC = () => {
                     <div className="flex items-center gap-2 px-3 py-1.5 border-e border-sand">
                         <div className="p-1 bg-leaf-soft rounded-full"><Zap className="w-3 h-3 text-leaf" /></div>
                         <div className="flex flex-col">
-                            <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider">Poids Page</span>
-                            <span className="text-[11px] font-bold text-ink leading-none">142 Ko</span>
+                            <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider">{t.ecoPageWeight}</span>
+                            {/* TODO Phase 6: compute from performance.getEntriesByType('resource') */}
+                            <span className="text-[11px] font-bold text-ink leading-none" dir="ltr">142 KB</span>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-2 px-3 py-1.5 border-e border-sand">
                         <div className="p-1 bg-paper rounded-full"><Cloud className="w-3 h-3 text-bark" /></div>
                         <div className="flex flex-col">
-                            <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider">Émission</span>
-                            <span className="text-[11px] font-bold text-ink leading-none">0.02g CO₂</span>
+                            <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider">{t.ecoEmission}</span>
+                            <span className="text-[11px] font-bold text-ink leading-none" dir="ltr">0.02 g CO₂</span>
                         </div>
                     </div>
 
@@ -115,16 +120,16 @@ export const TopBar: React.FC = () => {
                         className="flex items-center gap-2 px-3 py-1.5 cursor-pointer group"
                     >
                         <div className="flex flex-col text-end">
-                            <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider">Mode Éco</span>
+                            <span className="text-[9px] font-extrabold text-muted uppercase tracking-wider">{t.ecoMode}</span>
                             <span className={`text-[11px] font-bold leading-none transition-colors ${isEcoMode ? 'text-leaf' : 'text-muted'}`}>
-                                {isEcoMode ? 'Activé' : 'Désactivé'}
+                                {isEcoMode ? t.on : t.off}
                             </span>
                         </div>
                         <div className={`w-8 h-5 rounded-full p-0.5 transition-colors ${isEcoMode ? 'bg-leaf' : 'bg-line'}`}>
                             <motion.div
                                 layout
                                 className="w-4 h-4 bg-white rounded-full shadow-sm"
-                                animate={{ x: isEcoMode ? 12 : 0 }}
+                                animate={{ x: thumbX }}
                                 transition={{ type: 'spring', stiffness: 500, damping: 30 }}
                             />
                         </div>

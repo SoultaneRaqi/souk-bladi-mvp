@@ -1,31 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { BadgeCheck } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { translations } from '../../data/translations';
+import { translations, type TranslationKey } from '../../data/translations';
+import { fmt } from '../../utils/format';
 
 // Logos live in /public/logos/
-const SLIDES = [
-    {
-        logoUrl: '/logos/onssa.png',
-        name: 'ONSSA Maroc',
-        desc: 'Contrôle & Sécurité Sanitaire Officielle'
-    },
-    {
-        logoUrl: '/logos/label-bio.png',
-        name: 'Label Bio Maroc',
-        desc: 'Certification Agriculture Biologique'
-    },
-    {
-        logoUrl: '/logos/odco.png',
-        name: 'Réseau ODCO',
-        desc: 'Registre Officiel des Coopératives'
-    }
+const SLIDES: { logoUrl: string; nameKey: TranslationKey; descKey: TranslationKey }[] = [
+    { logoUrl: '/logos/onssa.png', nameKey: 'partnerOnssaName', descKey: 'partnerOnssaDesc' },
+    { logoUrl: '/logos/label-bio.png', nameKey: 'partnerBioName', descKey: 'partnerBioDesc' },
+    { logoUrl: '/logos/odco.png', nameKey: 'partnerOdcoName', descKey: 'partnerOdcoDesc' },
 ];
 
 export const HeroBanner: React.FC = () => {
     const { language } = useApp();
     const t = translations[language];
     const [currentSlide, setCurrentSlide] = useState(0);
+    const [failed, setFailed] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -34,7 +25,8 @@ export const HeroBanner: React.FC = () => {
         return () => clearInterval(timer);
     }, []);
 
-    const ActiveSlide = SLIDES[currentSlide];
+    const slide = SLIDES[currentSlide];
+    const slideName = t[slide.nameKey];
 
     return (
         <section className="relative overflow-hidden rounded-[20px] shadow-sm flex flex-col md:flex-row items-stretch min-h-[220px]">
@@ -60,7 +52,7 @@ export const HeroBanner: React.FC = () => {
 
                 <div className="absolute top-5 start-0 w-full text-center z-20">
                     <span className="text-[9px] font-extrabold text-white/60 tracking-[0.2em] uppercase">
-                        Nos Partenaires Éthiques
+                        {t.partnersTitle}
                     </span>
                 </div>
 
@@ -74,23 +66,24 @@ export const HeroBanner: React.FC = () => {
                         className="flex flex-col items-center gap-4 px-8 mt-4"
                     >
                         <div className="bg-white p-3 rounded-[24px] shadow-lg shadow-black/10 flex items-center justify-center w-[88px] h-[88px]">
-                            <img
-                                src={ActiveSlide.logoUrl}
-                                alt={ActiveSlide.name}
-                                className="w-full h-full object-contain"
-                                onError={(e) => {
-                                    // NOTE: placehold.co is an external request, replace with a local file in Phase 2
-                                    (e.target as HTMLImageElement).src = 'https://placehold.co/100x100/F6F5F2/A89F93?text=Logo';
-                                }}
-                            />
+                            {failed[slide.logoUrl] ? (
+                                <BadgeCheck className="w-10 h-10 text-honey-deep" aria-hidden="true" />
+                            ) : (
+                                <img
+                                    src={slide.logoUrl}
+                                    alt={slideName}
+                                    className="w-full h-full object-contain"
+                                    onError={() => setFailed((prev) => ({ ...prev, [slide.logoUrl]: true }))}
+                                />
+                            )}
                         </div>
 
                         <div className="flex flex-col gap-1.5">
                             <h3 className="text-[18px] font-black text-white tracking-wide uppercase drop-shadow-sm leading-none">
-                                {ActiveSlide.name}
+                                {slideName}
                             </h3>
                             <p className="text-[12px] font-semibold text-white/80 leading-snug max-w-[200px] mx-auto">
-                                {ActiveSlide.desc}
+                                {t[slide.descKey]}
                             </p>
                         </div>
                     </motion.div>
@@ -106,7 +99,7 @@ export const HeroBanner: React.FC = () => {
                             className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
                                 i === currentSlide ? 'w-6 bg-white' : 'w-1.5 bg-white/30 hover:bg-white/50'
                             }`}
-                            aria-label={`Slide ${i + 1}`}
+                            aria-label={fmt(t.slideLabel, { n: i + 1 })}
                         />
                     ))}
                 </div>

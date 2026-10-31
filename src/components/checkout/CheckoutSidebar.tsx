@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ShieldCheck, MapPin, Trash2, CheckCircle2, ShoppingBag, Minus, Plus, X } from 'lucide-react';
 import { useApp } from '../../context/AppContext';
-import { translations } from '../../data/translations';
+import { LANGUAGE_META, translations } from '../../data/translations';
+import { formatPrice } from '../../utils/format';
 
 const COMMUNES = [
     'Aït Ourir (Al Haouz)',
@@ -15,6 +16,8 @@ const COMMUNES = [
 export const CheckoutSidebar: React.FC = () => {
     const { language, cart, cartCount, updateQuantity, removeFromCart, clearCart, setIsDrawerOpen } = useApp();
     const t = translations[language];
+    const isRtl = LANGUAGE_META[language].dir === 'rtl';
+    const slide = isRtl ? -20 : 20;
 
     const [firstName, setFirstName] = useState('');
     const [phone, setPhone] = useState('+212 ');
@@ -39,7 +42,7 @@ export const CheckoutSidebar: React.FC = () => {
             id="checkout"
             tabIndex={-1}
             aria-label={t.cart}
-            className="w-[min(340px,100vw)] bg-white border-s border-line h-full flex flex-col pt-8 pb-6 px-6 shrink-0 shadow-[-4px_0_24px_rgba(64,51,40,0.02)] overflow-y-auto relative z-30 focus:outline-none"
+            className="w-[min(340px,100vw)] bg-white border-s border-line h-full flex flex-col pt-8 pb-6 px-6 shrink-0 shadow-[0_0_24px_rgba(64,51,40,0.04)] overflow-y-auto relative z-30 focus:outline-none"
         >
 
             <div className="flex items-center justify-between mb-6 pb-4 border-b border-sand">
@@ -73,9 +76,9 @@ export const CheckoutSidebar: React.FC = () => {
                         <div className="w-16 h-16 rounded-full bg-leaf-soft flex items-center justify-center mb-2">
                             <CheckCircle2 className="w-8 h-8 text-leaf" />
                         </div>
-                        <h3 className="text-[18px] font-bold text-ink">Commande validée !</h3>
+                        <h3 className="text-[18px] font-bold text-ink">{t.orderDone}</h3>
                         <p className="text-[13px] text-bark font-medium leading-relaxed px-4">
-                            Votre commande a été enregistrée sans aucune collecte de données superflues.
+                            {t.orderDoneText}
                         </p>
                     </motion.div>
                 ) : cart.length === 0 ? (
@@ -99,7 +102,7 @@ export const CheckoutSidebar: React.FC = () => {
                                 {cart.map((item) => (
                                     <motion.div
                                         layout
-                                        initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}
+                                        initial={{ opacity: 0, x: slide }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -slide }}
                                         key={item.product.id}
                                         className="flex items-center justify-between gap-2 p-3 rounded-2xl bg-paper border border-line/60"
                                     >
@@ -109,7 +112,7 @@ export const CheckoutSidebar: React.FC = () => {
                                             </div>
                                             <div className="flex flex-col min-w-0">
                                                 <span className="text-[12px] font-bold text-ink line-clamp-1">{item.product.name[language]}</span>
-                                                <span className="text-[11px] font-semibold text-muted">{item.product.price * item.quantity} DHM</span>
+                                                <span className="text-[11px] font-semibold text-muted">{formatPrice(item.product.price * item.quantity, language)}</span>
                                             </div>
                                         </div>
 
@@ -156,16 +159,17 @@ export const CheckoutSidebar: React.FC = () => {
                                 <label className="block text-[11px] font-bold uppercase tracking-wider text-bark mb-1.5">{t.firstName}</label>
                                 <input
                                     type="text" required value={firstName} onChange={(e) => setFirstName(e.target.value)}
-                                    placeholder="Ex: Karim"
+                                    placeholder={t.namePlaceholder}
                                     className="w-full px-4 py-2.5 bg-white border border-line-strong rounded-xl text-ink text-[13px] font-semibold placeholder:text-muted focus:outline-none focus:border-saffron focus:ring-1 focus:ring-saffron transition-all"
                                 />
                             </div>
 
                             <div>
                                 <label className="block text-[11px] font-bold uppercase tracking-wider text-bark mb-1.5">{t.phone}</label>
+                                {/* dir=ltr keeps "+212 6…" readable inside an RTL page */}
                                 <input
-                                    type="tel" required value={phone} onChange={(e) => setPhone(e.target.value)}
-                                    className="w-full px-4 py-2.5 bg-white border border-line-strong rounded-xl text-ink text-[13px] font-semibold focus:outline-none focus:border-saffron focus:ring-1 focus:ring-saffron transition-all"
+                                    type="tel" dir="ltr" required value={phone} onChange={(e) => setPhone(e.target.value)}
+                                    className="w-full px-4 py-2.5 bg-white border border-line-strong rounded-xl text-ink text-[13px] font-semibold focus:outline-none focus:border-saffron focus:ring-1 focus:ring-saffron transition-all text-start"
                                 />
                             </div>
 
@@ -190,7 +194,7 @@ export const CheckoutSidebar: React.FC = () => {
                             <div className="mt-auto pt-4 border-t border-sand">
                                 <div className="flex items-center justify-between mb-4">
                                     <span className="text-[13px] font-bold text-bark">{t.totalLabel}</span>
-                                    <span className="text-[20px] font-extrabold text-ink">{total} <span className="text-[12px] text-muted">DHM</span></span>
+                                    <span className="text-[20px] font-extrabold text-ink">{formatPrice(total, language)}</span>
                                 </div>
 
                                 <button

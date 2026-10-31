@@ -2,7 +2,7 @@ import React from 'react';
 
 export const BrandLogo: React.FC = () => {
     return (
-        <div className="flex items-center gap-1 ps-2 select-none">
+        <div dir="ltr" className="flex items-center gap-1 ps-2 select-none">
             <div className="text-[44px] font-serif font-bold text-ink leading-[0.85] tracking-tight">
                 Souk<br />Bladi
             </div>
