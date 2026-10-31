@@ -32,6 +32,11 @@
   --color-leaf-soft: #EAF2E8;
   --color-leaf-mist: #D6E3D1;
   --color-leaf-line: #C2D6BA;
+
+  /* Fonts (self-hosted via @fontsource). Arabic + Tifinagh are in every stack
+     so a Latin font falls through to the right script automatically. */
+  --font-sans: 'DM Sans Variable', 'Noto Sans Arabic Variable', 'Noto Sans Tifinagh', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Fraunces Variable', 'Noto Sans Arabic Variable', 'Noto Sans Tifinagh', ui-serif, Georgia, serif;
 }
 
 @utility scrollbar-hide {
@@ -42,7 +47,29 @@
   }
 }
 
+@layer base {
+  html {
+    font-family: var(--font-sans);
+  }
+}
+
+/* Arabic: lead with the Arabic font, and NEVER letter-space it
+   (tracking-wider breaks the joining of Arabic letters). */
+html:lang(ar) {
+  --font-sans: 'Noto Sans Arabic Variable', 'DM Sans Variable', 'Noto Sans Tifinagh', system-ui, sans-serif;
+  --font-serif: 'Noto Sans Arabic Variable', 'Fraunces Variable', 'Noto Sans Tifinagh', system-ui, serif;
+}
+html:lang(ar) * {
+  letter-spacing: normal !important;
+}
+
 :focus-visible {
   outline: 2px solid var(--color-saffron-deep);
   outline-offset: 2px;
+}
+
+/* Local geometric pattern (replaces the transparenttextures.com request) */
+.bg-zellige {
+  background-image: url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg' fill='none' stroke='%23fff' stroke-width='1'%3E%3Crect x='12' y='12' width='24' height='24'/%3E%3Crect x='12' y='12' width='24' height='24' transform='rotate(45 24 24)'/%3E%3C/svg%3E");
+  background-size: 48px 48px;
 }
